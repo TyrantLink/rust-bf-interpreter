@@ -1,5 +1,6 @@
 #![allow(arithmetic_overflow)]
 use std::collections::HashMap;
+use std::io::{self, Write};
 use console::Term;
 use clap::Parser;
 use std::fs;
@@ -81,6 +82,7 @@ fn run(program:&str,print_tape:bool)
 		}
 		pgrm_ptr += 1;
 	}
+	io::stdout().flush().unwrap();
 	if print_tape{dbg!(&tape);}
 }
 
@@ -92,7 +94,7 @@ fn main()
 	{
 		program = fs::read_to_string(&args.file).unwrap();
 	}
-	
+
 	program.retain(|c| "+-<>[].".contains(c));
 	run(&program,args.print_tape);
 }
