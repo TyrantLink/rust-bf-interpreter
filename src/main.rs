@@ -1,6 +1,5 @@
 #![allow(arithmetic_overflow)]
 use std::collections::HashMap;
-use std::io::{self, Write};
 use console::Term;
 use clap::Parser;
 use std::fs;
@@ -82,8 +81,7 @@ fn run(program:&str,print_tape:bool)
 		}
 		pgrm_ptr += 1;
 	}
-	io::stdout().flush().unwrap();
-	if print_tape{dbg!(&tape);}
+	if print_tape{println!("\n");dbg!(&tape);}
 }
 
 fn main()
