@@ -1,5 +1,6 @@
 #![allow(arithmetic_overflow)]
 use std::collections::HashMap;
+use std::io::{stdout, Write};
 use console::Term;
 use clap::Parser;
 use std::fs;
@@ -75,8 +76,14 @@ fn run(program:&str,print_tape:bool)
 			{
 				if tape[tape_ptr as usize] != 0{pgrm_ptr = loopmap[&pgrm_ptr]}
 			}
-			'.' =>{print!("{}",tape[tape_ptr as usize] as char)}
-			',' =>{tape[tape_ptr as usize] = input_handler.read_char().unwrap() as u8}
+			'.' =>{print!("{}",tape[tape_ptr as usize] as char);stdout().flush().unwrap();}
+			',' =>
+			{
+				let inp:char = input_handler.read_char().unwrap();
+				tape[tape_ptr as usize] = inp as u8;
+				print!("{}",inp);
+				stdout().flush().unwrap();
+			}
 			_   => ()
 		}
 		pgrm_ptr += 1;
@@ -93,6 +100,6 @@ fn main()
 		program = fs::read_to_string(&args.file).unwrap();
 	}
 
-	program.retain(|c| "+-<>[].".contains(c));
+	program.retain(|c| "+-<>[].,".contains(c));
 	run(&program,args.print_tape);
 }
