@@ -5,21 +5,21 @@ use console::Term;
 use clap::Parser;
 use std::fs;
 
-#[derive(Parser, Debug)]
+#[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 struct Args
 {
-	/// directly input bf string
-	#[arg(short, long, conflicts_with="file",default_value="",required_unless_present="file")]
-	string:String,
-
 	/// name of bf file
-	#[arg(short, long, conflicts_with="string",default_value="",required_unless_present="string")]
+	#[arg(required_unless_present="string",default_value="")]
 	file:String,
 
+	/// directly input bf string
+	#[arg(short,long,default_missing_value="++++++++++.",default_value="")]
+	string:String,
+
 	/// print the entire tape upon program completion
-	#[arg(long,default_missing_value="true",default_value="false")]
-	print_tape:bool,
+	#[arg(short,long,default_missing_value="true",default_value="false")]
+	tape:bool,
 }
 
 fn create_loopmap(program:&str) -> HashMap<u64,u64>
@@ -76,7 +76,7 @@ fn run(program:&str,print_tape:bool)
 			{
 				if tape[tape_ptr as usize] != 0{pgrm_ptr = loopmap[&pgrm_ptr]}
 			}
-			'.' =>{print!("{}",tape[tape_ptr as usize] as char);stdout().flush().unwrap();}
+			'.' =>{print!("{}",tape[tape_ptr as usize] as char);stdout().flush().unwrap()}
 			',' =>
 			{
 				let inp:char = input_handler.read_char().unwrap();
@@ -94,12 +94,7 @@ fn run(program:&str,print_tape:bool)
 fn main()
 {
 	let args:Args = Args::parse();
-	let mut program = args.string;
-	if args.file != ""
-	{
-		program = fs::read_to_string(&args.file).unwrap();
-	}
-
+	let mut program: String = if args.string != "" {args.string} else {fs::read_to_string(&args.file).unwrap()};
 	program.retain(|c| "+-<>[].,".contains(c));
-	run(&program,args.print_tape);
+	run(&program,args.tape);
 }
